@@ -1,29 +1,11 @@
-#include <Windows.h>
-#include <iostream>
-#include <string>
-
-
-
-void OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
-void OnThreadCreated(const CREATE_THREAD_DEBUG_INFO*);
-void OnException(const EXCEPTION_DEBUG_INFO*);
-void OnProcessExited(const EXIT_PROCESS_DEBUG_INFO*);
-void OnThreadExited(const EXIT_THREAD_DEBUG_INFO*);
-void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO*);
-void OnRipEvent(const RIP_INFO*);
-void OnDllLoaded(const LOAD_DLL_DEBUG_INFO*);
-void OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO*);
-
-
-
-
+#include "main.h"
 
 int wmain(int argc, wchar_t** argv) {
 
-	STARTUPINFO si = { 0 };
-	si.cb = sizeof(si);
-
-	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFO startupinfo = { 0 };
+	startupinfo.cb = sizeof(startupinfo);
+	PROCESS_INFORMATION processinfo = { 0 };
+	unsigned int creationflags = DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE;
 
 	if (CreateProcess(
 		TEXT("L:\\git_up\\json_parser_decoder\\cpp\\json\\Debug\\json.exe"),
@@ -31,12 +13,12 @@ int wmain(int argc, wchar_t** argv) {
 		NULL,
 		NULL,
 		FALSE,
-		DEBUG_PROCESS,
+		creationflags,
 		NULL,
 		NULL,
-		&si,
-		&pi) == FALSE) {
-
+		&startupinfo,
+		&processinfo) == FALSE)
+	{
 		std::wcout << TEXT("CreateProcess failed: ") << GetLastError() << std::endl;
 		return -1;
 	}
@@ -44,10 +26,10 @@ int wmain(int argc, wchar_t** argv) {
 	BOOL waitEvent = TRUE;
 
 	DEBUG_EVENT debugEvent;
-	while (waitEvent == TRUE && WaitForDebugEvent(&debugEvent, INFINITE)) {
-
-		switch (debugEvent.dwDebugEventCode) {
-
+	while (waitEvent == TRUE && WaitForDebugEvent(&debugEvent, INFINITE)) 
+	{
+		switch (debugEvent.dwDebugEventCode) 
+		{
 		case CREATE_PROCESS_DEBUG_EVENT:
 			OnProcessCreated(&debugEvent.u.CreateProcessInfo);
 			break;
@@ -90,16 +72,18 @@ int wmain(int argc, wchar_t** argv) {
 			break;
 		}
 
-		if (waitEvent == TRUE) {
+		if (waitEvent == TRUE) 
+		{
 			ContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, DBG_CONTINUE);
 		}
-		else {
+		else 
+		{
 			break;
 		}
 	}
 
-	CloseHandle(pi.hThread);
-	CloseHandle(pi.hProcess);
+	CloseHandle(processinfo.hThread);
+	CloseHandle(processinfo.hProcess);
 
 	return 0;
 }

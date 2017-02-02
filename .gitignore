@@ -27,3 +27,12 @@
 *.exe
 *.out
 *.app
+
+# vs2013
+*.sdf
+*.exe
+*.ilk
+*.pdb
+*.opensdf
+*.suo
+Debug
