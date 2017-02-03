@@ -1,6 +1,8 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
+#include <iomanip>
+#include <malloc.h>
 
 
 void OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
