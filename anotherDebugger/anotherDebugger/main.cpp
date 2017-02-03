@@ -11,7 +11,7 @@ int wmain(int argc, wchar_t** argv) {
 	unsigned int creationflags = DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE;
 
 	if (CreateProcess(
-		TEXT("L:\\git_up\\json_parser_decoder\\cpp\\json\\Debug\\json.exe"),
+		TEXT("L:\\git_up\\anotherDebugger\\anotherDebugger\\Debug\\test.exe"),
 		NULL,
 		NULL,
 		NULL,
@@ -149,7 +149,7 @@ void OnThreadExited(const EXIT_THREAD_DEBUG_INFO* pInfo)
 
 void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo) 
 {
-	std::wcout << TEXT("Debuggee outputed debug string.") << std::endl;
+	// std::wcout << TEXT("Debuggee outputed debug string.") << std::endl;
 
 	BYTE* pBuffer = (BYTE*)malloc(pInfo->nDebugStringLength);
 	SIZE_T bytesread;
