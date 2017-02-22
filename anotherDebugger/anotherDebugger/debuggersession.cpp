@@ -1,7 +1,13 @@
 #include "main.h"
 
-HANDLE g_hProcess = NULL;
-DWORD g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
+static HANDLE g_hProcess = NULL;
+static HANDLE g_hTread = NULL;
+static DWORD g_processID = 0;
+static DWORD g_threadID = 0;
+
+static DWORD g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
+static auto g_debuggeeStatus = DebuggeeStatus::NONE;
+
 
 int startDebuggerSession(LPCTSTR path) {
 
@@ -23,7 +29,7 @@ int startDebuggerSession(LPCTSTR path) {
 		&startupinfo,
 		&processinfo) == FALSE)
 	{
-		std::wcout << TEXT("CreateProcess failed: ") << GetLastError() << std::endl;
+		std::cout << "CreateProcess failed: " << GetLastError() << std::endl;
 		return -1;
 	}
 
@@ -73,7 +79,7 @@ int startDebuggerSession(LPCTSTR path) {
 			break;
 
 		default:
-			std::wcout << TEXT("Unknown debug event.") << std::endl;
+			std::cout << "Unknown debug event." << std::endl;
 			break;
 		}
 
@@ -100,7 +106,7 @@ void OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO* pInfo)
 	//CloseHandle(pInfo->hFile);
 	//CloseHandle(pInfo->hProcess);
 	//CloseHandle(pInfo->hThread);
-	std::wcout << TEXT("Debuggee was created.") << std::endl;
+	std::cout << "Debuggee was created." << std::endl;
 }
 
 
@@ -108,26 +114,26 @@ void OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO* pInfo)
 void OnThreadCreated(const CREATE_THREAD_DEBUG_INFO* pInfo)
 {
 	//CloseHandle(pInfo->hThread);
-	std::wcout << TEXT("A new thread was created.") << std::endl;
+	std::cout << "A new thread was created." << std::endl;
 }
 
 
 
 void OnException(const EXCEPTION_DEBUG_INFO* pInfo)
 {
-	std::wcout << TEXT("An exception was occured.") << std::endl;
-	std::wcout << std::hex << std::uppercase << std::setw(8) << std::setfill(L'0')
-		<< pInfo->ExceptionRecord.ExceptionAddress << TEXT(".") << std::endl
-		<< TEXT("Exception code: ") << pInfo->ExceptionRecord.ExceptionCode << std::dec << std::endl;
+	std::cout << "An exception was occured." << std::endl;
+	std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill(L'0')
+		<< pInfo->ExceptionRecord.ExceptionAddress << "." << std::endl
+		<< "Exception code: " << pInfo->ExceptionRecord.ExceptionCode << std::dec << std::endl;
 
 	if (pInfo->dwFirstChance == TRUE)
 	{
-		std::wcout << TEXT("First chance.") << std::endl;
+		std::cout << "First chance." << std::endl;
 		g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
 	}
 	else
 	{
-		std::wcout << TEXT("Second chance.") << std::endl;
+		std::cout << "Second chance." << std::endl;
 		g_continueStatus = DBG_CONTINUE;
 	}
 }
@@ -136,21 +142,21 @@ void OnException(const EXCEPTION_DEBUG_INFO* pInfo)
 
 void OnProcessExited(const EXIT_PROCESS_DEBUG_INFO* pInfo)
 {
-	std::wcout << TEXT("Debuggee was terminated.") << std::endl;
+	std::cout << "Debuggee was terminated." << std::endl;
 }
 
 
 
 void OnThreadExited(const EXIT_THREAD_DEBUG_INFO* pInfo)
 {
-	std::wcout << TEXT("A thread was terminated.") << std::endl;
+	std::cout << "A thread was terminated." << std::endl;
 }
 
 
 
 void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo)
 {
-	// std::wcout << TEXT("Debuggee outputed debug string.") << std::endl;
+	// std::cout << TEXT("Debuggee outputed debug string.") << std::endl;
 
 	BYTE* pBuffer = (BYTE*)malloc(pInfo->nDebugStringLength);
 	SIZE_T bytesread;
@@ -178,7 +184,7 @@ void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo)
 		pWideStr,
 		requireLen);
 
-	std::wcout << TEXT("Debuggee debug string is: ") << pWideStr << std::endl;
+	std::cout << "Debuggee debug string is: " << pWideStr << std::endl;
 	free(pWideStr);
 	free(pBuffer);
 
@@ -189,19 +195,19 @@ void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo)
 
 void OnRipEvent(const RIP_INFO* pInfo)
 {
-	std::wcout << TEXT("A RIP_EVENT occured.") << std::endl;
+	std::cout << "A RIP_EVENT occured." << std::endl;
 }
 
 
 
 void OnDllLoaded(const LOAD_DLL_DEBUG_INFO* pInfo)
 {
-	std::wcout << TEXT("A dll was loaded.") << std::endl;
+	std::cout << "A dll was loaded." << std::endl;
 }
 
 
 
 void OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO* pInfo)
 {
-	std::wcout << TEXT("A dll was unloaded.") << std::endl;
+	std::cout << "A dll was unloaded." << std::endl;
 }

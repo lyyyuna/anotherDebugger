@@ -2,20 +2,20 @@
 
 int main()
 {
-	wcout << TEXT("anotherDebugger by lyyyuna") << endl;
+	wcout << "anotherDebugger by lyyyuna" << endl;
 
-	wstring cmdline;
+	string cmdline;
 	Command cmd;
 	while (true)
 	{
-		wcout << endl << TEXT(">");
-		getline(wcin, cmdline);
+		cout << endl << ">";
+		getline(cin, cmdline);
 		
 		parseCommand(cmdline, cmd);
-		//if (false == dispatchCommand(cmd))
-		//{
-		//	break;
-		//}
+		if (false == dispatchCommand(cmd))
+		{
+			break;
+		}
 	}
 	return 0;
 }
