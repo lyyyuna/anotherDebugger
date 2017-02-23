@@ -9,12 +9,19 @@ static DWORD g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
 static auto g_debuggeeStatus = DebuggeeStatus::NONE;
 
 
-int startDebuggerSession(LPCTSTR path) {
+int startDebuggerSession(LPCTSTR path) 
+{
+	if (g_debuggeeStatus != DebuggeeStatus::NONE)
+	{
+		cout << "Debuggee is already running." << endl;
+		return;
+	}
+
 
 	STARTUPINFO startupinfo = { 0 };
 	startupinfo.cb = sizeof(startupinfo);
 	PROCESS_INFORMATION processinfo = { 0 };
-	unsigned int creationflags = DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE;
+	unsigned int creationflags = DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE | CREATE_SUSPENDED;
 
 	if (CreateProcess(
 		//TEXT("L:\\git_up\\anotherDebugger\\anotherDebugger\\Debug\\test.exe"),
