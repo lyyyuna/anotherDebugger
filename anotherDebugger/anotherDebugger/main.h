@@ -9,24 +9,25 @@
 
 using namespace std;
 
-int startDebuggerSession(LPCTSTR path);
+void startDebuggerSession(LPCTSTR path);
+void HandledException(BOOL handled);
 
-void OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
-void OnThreadCreated(const CREATE_THREAD_DEBUG_INFO*);
-void OnException(const EXCEPTION_DEBUG_INFO*);
-void OnProcessExited(const EXIT_PROCESS_DEBUG_INFO*);
-void OnThreadExited(const EXIT_THREAD_DEBUG_INFO*);
-void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO*);
-void OnRipEvent(const RIP_INFO*);
-void OnDllLoaded(const LOAD_DLL_DEBUG_INFO*);
-void OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO*);
+BOOL OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
+BOOL OnThreadCreated(const CREATE_THREAD_DEBUG_INFO*);
+BOOL OnException(const EXCEPTION_DEBUG_INFO*);
+BOOL OnProcessExited(const EXIT_PROCESS_DEBUG_INFO*);
+BOOL OnThreadExited(const EXIT_THREAD_DEBUG_INFO*);
+BOOL OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO*);
+BOOL OnRipEvent(const RIP_INFO*);
+BOOL OnDllLoaded(const LOAD_DLL_DEBUG_INFO*);
+BOOL OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO*);
 
 typedef vector<string> Command;
 
 typedef void(*cmdHandler)(const Command&);
 
 void parseCommand(string&, Command&);
-bool dispatchCommand(Command&);
+BOOL dispatchCommand(const Command&);
 void OnStartDebug(const Command& cmd);
 void OnShowRegisters(const Command& cmd);
 void OnStopDebug(const Command& cmd);
@@ -40,3 +41,6 @@ enum class DebuggeeStatus
 	SUSPENDED,
 	INTERRUPTED
 };
+BOOL dispatchDebugEvent(const DEBUG_EVENT& debugEvent);
+void ContinueDebugerSession();
+DebuggeeStatus getDebuggeeStatus();

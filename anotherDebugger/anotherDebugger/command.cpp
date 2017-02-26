@@ -16,8 +16,7 @@ map<string, cmdHandler> cmdMap = {
 	{ "g", OnGo },
 	{ "d", OnDump },
 	{ "r", OnShowRegisters },
-	{ "t", OnStopDebug },
-	{ NULL, NULL },
+	{ "t", OnStopDebug }
 };
 
 BOOL dispatchCommand(const Command& cmd)
@@ -45,13 +44,3 @@ BOOL dispatchCommand(const Command& cmd)
 	}
 }
 
-void OnStartDebug(const Command& cmd)
-{
-	if (cmd.size() != 2)
-	{
-		cout << "Lack path" << endl;
-		return;
-	}
-
-	startDebuggerSession(cmd[1].c_str());
-}

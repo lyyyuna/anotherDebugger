@@ -8,14 +8,16 @@ int main()
 	Command cmd;
 	while (true)
 	{
-		cout << endl << ">";
+		cout << endl << "> ";
 		getline(cin, cmdline);
 		
 		parseCommand(cmdline, cmd);
-		if (false == dispatchCommand(cmd))
+		if (FALSE == dispatchCommand(cmd))
 		{
 			break;
 		}
+
+		cmd.clear();
 	}
 	return 0;
 }

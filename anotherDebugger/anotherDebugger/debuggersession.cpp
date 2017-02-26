@@ -1,7 +1,7 @@
 #include "main.h"
 
 static HANDLE g_hProcess = NULL;
-static HANDLE g_hTread = NULL;
+static HANDLE g_hThread = NULL;
 static DWORD g_processID = 0;
 static DWORD g_threadID = 0;
 
@@ -9,7 +9,12 @@ static DWORD g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
 static auto g_debuggeeStatus = DebuggeeStatus::NONE;
 
 
-int startDebuggerSession(LPCTSTR path) 
+DebuggeeStatus getDebuggeeStatus()
+{
+	return g_debuggeeStatus;
+}
+
+void startDebuggerSession(LPCTSTR path)
 {
 	if (g_debuggeeStatus != DebuggeeStatus::NONE)
 	{
@@ -24,8 +29,8 @@ int startDebuggerSession(LPCTSTR path)
 	unsigned int creationflags = DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE | CREATE_SUSPENDED;
 
 	if (CreateProcess(
-		//TEXT("L:\\git_up\\anotherDebugger\\anotherDebugger\\Debug\\test.exe"),
-		path,
+		"L:\\git_up\\anotherDebugger\\anotherDebugger\\Debug\\test.exe",
+		//path,
 		NULL,
 		NULL,
 		NULL,
@@ -37,99 +42,128 @@ int startDebuggerSession(LPCTSTR path)
 		&processinfo) == FALSE)
 	{
 		std::cout << "CreateProcess failed: " << GetLastError() << std::endl;
-		return -1;
+		return;
 	}
 
 	g_hProcess = processinfo.hProcess;
-	BOOL waitEvent = TRUE;
+	g_hThread = processinfo.hThread;
+	g_processID = processinfo.dwProcessId;
+	g_threadID = processinfo.dwThreadId;
+
+	g_debuggeeStatus = DebuggeeStatus::SUSPENDED;
+
+	cout << "Debuggee has started and was suspended." << endl;
+
+}
+
+void ContinueDebugerSession()
+{
+	if (g_debuggeeStatus == DebuggeeStatus::NONE)
+	{
+		cout << "Debuggee is not started yet." << endl;
+		return;
+	}
+	if (g_debuggeeStatus == DebuggeeStatus::SUSPENDED)
+	{
+		cout << "Continue to run." << endl;
+		ResumeThread(g_hThread);
+	}
+	else {
+		//ContinueDebugEvent(g_processID, g_threadID, g_continueStatus);
+	}
 
 	DEBUG_EVENT debugEvent;
-	while (waitEvent == TRUE && WaitForDebugEvent(&debugEvent, INFINITE))
+	while (WaitForDebugEvent(&debugEvent, INFINITE) == TRUE)
 	{
-		switch (debugEvent.dwDebugEventCode)
+		g_processID = debugEvent.dwProcessId;
+		g_threadID = debugEvent.dwThreadId;
+		if (dispatchDebugEvent(debugEvent) == TRUE)
 		{
-		case CREATE_PROCESS_DEBUG_EVENT:
-			OnProcessCreated(&debugEvent.u.CreateProcessInfo);
-			break;
-
-		case CREATE_THREAD_DEBUG_EVENT:
-			OnThreadCreated(&debugEvent.u.CreateThread);
-			break;
-
-		case EXCEPTION_DEBUG_EVENT:
-			OnException(&debugEvent.u.Exception);
-			break;
-
-		case EXIT_PROCESS_DEBUG_EVENT:
-			OnProcessExited(&debugEvent.u.ExitProcess);
-			waitEvent = FALSE;
-			break;
-
-		case EXIT_THREAD_DEBUG_EVENT:
-			OnThreadExited(&debugEvent.u.ExitThread);
-			break;
-
-		case LOAD_DLL_DEBUG_EVENT:
-			OnDllLoaded(&debugEvent.u.LoadDll);
-			break;
-
-		case UNLOAD_DLL_DEBUG_EVENT:
-			OnDllUnloaded(&debugEvent.u.UnloadDll);
-			break;
-
-		case OUTPUT_DEBUG_STRING_EVENT:
-			OnOutputDebugString(&debugEvent.u.DebugString);
-			break;
-
-		case RIP_EVENT:
-			OnRipEvent(&debugEvent.u.RipInfo);
-			break;
-
-		default:
-			std::cout << "Unknown debug event." << std::endl;
-			break;
+			ContinueDebugEvent(g_processID, g_threadID, g_continueStatus);
 		}
-
-		if (waitEvent == TRUE)
-		{
-			ContinueDebugEvent(debugEvent.dwProcessId, debugEvent.dwThreadId, g_continueStatus);
-		}
-		else
-		{
+		else {
 			break;
 		}
 	}
+}
 
-	CloseHandle(processinfo.hThread);
-	CloseHandle(processinfo.hProcess);
+BOOL dispatchDebugEvent(const DEBUG_EVENT & debugEvent)
+{
+	switch (debugEvent.dwDebugEventCode)
+	{
+	case CREATE_PROCESS_DEBUG_EVENT:
+		return OnProcessCreated(&debugEvent.u.CreateProcessInfo);
+		break;
 
-	return 0;
+	case CREATE_THREAD_DEBUG_EVENT:
+		return OnThreadCreated(&debugEvent.u.CreateThread);
+		break;
+
+	case EXCEPTION_DEBUG_EVENT:
+		return OnException(&debugEvent.u.Exception);
+		break;
+
+	case EXIT_PROCESS_DEBUG_EVENT:
+		return OnProcessExited(&debugEvent.u.ExitProcess);
+		break;
+
+	case EXIT_THREAD_DEBUG_EVENT:
+		return OnThreadExited(&debugEvent.u.ExitThread);
+		break;
+
+	case LOAD_DLL_DEBUG_EVENT:
+		return OnDllLoaded(&debugEvent.u.LoadDll);
+		break;
+
+	case UNLOAD_DLL_DEBUG_EVENT:
+		return OnDllUnloaded(&debugEvent.u.UnloadDll);
+		break;
+
+	case OUTPUT_DEBUG_STRING_EVENT:
+		return OnOutputDebugString(&debugEvent.u.DebugString);
+		break;
+
+	case RIP_EVENT:
+		return OnRipEvent(&debugEvent.u.RipInfo);
+		break;
+
+	default:
+		std::cout << "Unknown debug event." << std::endl;
+		return FALSE;
+		break;
+	}
 }
 
 
 
-void OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO* pInfo)
+BOOL OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO* pInfo)
 {
 	//CloseHandle(pInfo->hFile);
 	//CloseHandle(pInfo->hProcess);
 	//CloseHandle(pInfo->hThread);
 	std::cout << "Debuggee was created." << std::endl;
+	return TRUE;
 }
 
 
 
-void OnThreadCreated(const CREATE_THREAD_DEBUG_INFO* pInfo)
+BOOL OnThreadCreated(const CREATE_THREAD_DEBUG_INFO* pInfo)
 {
 	//CloseHandle(pInfo->hThread);
 	std::cout << "A new thread was created." << std::endl;
+	return TRUE;
 }
 
 
+void HandledException(BOOL handled) 
+{
+	g_continueStatus = (handled == TRUE) ? DBG_CONTINUE : DBG_EXCEPTION_NOT_HANDLED;
+}
 
-void OnException(const EXCEPTION_DEBUG_INFO* pInfo)
+BOOL OnException(const EXCEPTION_DEBUG_INFO* pInfo)
 {
 	std::cout << "An exception was occured." << std::endl;
-	std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill(L'0')
+	std::cout << std::hex << std::uppercase << std::setw(8) << std::setfill('0')
 		<< pInfo->ExceptionRecord.ExceptionAddress << "." << std::endl
 		<< "Exception code: " << pInfo->ExceptionRecord.ExceptionCode << std::dec << std::endl;
 
@@ -143,25 +177,44 @@ void OnException(const EXCEPTION_DEBUG_INFO* pInfo)
 		std::cout << "Second chance." << std::endl;
 		g_continueStatus = DBG_CONTINUE;
 	}
+
+	//g_debuggeeStatus = DebuggeeStatus::SUSPENDED;
+	return TRUE;
 }
 
 
 
-void OnProcessExited(const EXIT_PROCESS_DEBUG_INFO* pInfo)
+BOOL OnProcessExited(const EXIT_PROCESS_DEBUG_INFO* pInfo)
 {
 	std::cout << "Debuggee was terminated." << std::endl;
+	cout << "The exit code: " << pInfo->dwExitCode << endl;
+
+	ContinueDebugEvent(g_processID, g_threadID, DBG_CONTINUE);
+
+	CloseHandle(g_hThread);
+	CloseHandle(g_hProcess);
+
+	g_hProcess = NULL;
+	g_hThread = NULL;
+	g_processID = 0;
+	g_threadID = 0;
+	g_debuggeeStatus = DebuggeeStatus::NONE;
+	//g_continueStatus = 
+
+	return FALSE;
 }
 
 
 
-void OnThreadExited(const EXIT_THREAD_DEBUG_INFO* pInfo)
+BOOL OnThreadExited(const EXIT_THREAD_DEBUG_INFO* pInfo)
 {
 	std::cout << "A thread was terminated." << std::endl;
+	return TRUE;
 }
 
 
 
-void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo)
+BOOL OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo)
 {
 	// std::cout << TEXT("Debuggee outputed debug string.") << std::endl;
 
@@ -195,26 +248,32 @@ void OnOutputDebugString(const OUTPUT_DEBUG_STRING_INFO* pInfo)
 	free(pWideStr);
 	free(pBuffer);
 
-	g_continueStatus = DBG_CONTINUE;
+	g_debuggeeStatus = DebuggeeStatus::INTERRUPTED;
+	return FALSE;
 }
 
 
 
-void OnRipEvent(const RIP_INFO* pInfo)
+BOOL OnRipEvent(const RIP_INFO* pInfo)
 {
 	std::cout << "A RIP_EVENT occured." << std::endl;
+	g_debuggeeStatus = DebuggeeStatus::INTERRUPTED;
+	return FALSE;
 }
 
 
 
-void OnDllLoaded(const LOAD_DLL_DEBUG_INFO* pInfo)
+BOOL OnDllLoaded(const LOAD_DLL_DEBUG_INFO* pInfo)
 {
 	std::cout << "A dll was loaded." << std::endl;
+	return TRUE;
 }
 
 
 
-void OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO* pInfo)
+BOOL OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO* pInfo)
 {
 	std::cout << "A dll was unloaded." << std::endl;
+	return TRUE;
 }
+
