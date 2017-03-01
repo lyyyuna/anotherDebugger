@@ -69,7 +69,7 @@ void ContinueDebugerSession()
 		ResumeThread(g_hThread);
 	}
 	else {
-		//ContinueDebugEvent(g_processID, g_threadID, g_continueStatus);
+		ContinueDebugEvent(g_processID, g_threadID, g_continueStatus);
 	}
 
 	DEBUG_EVENT debugEvent;
@@ -79,7 +79,7 @@ void ContinueDebugerSession()
 		g_threadID = debugEvent.dwThreadId;
 		if (dispatchDebugEvent(debugEvent) == TRUE)
 		{
-			ContinueDebugEvent(g_processID, g_threadID, g_continueStatus);
+			ContinueDebugEvent(g_processID, g_threadID, DBG_EXCEPTION_NOT_HANDLED);
 		}
 		else {
 			break;
@@ -170,16 +170,16 @@ BOOL OnException(const EXCEPTION_DEBUG_INFO* pInfo)
 	if (pInfo->dwFirstChance == TRUE)
 	{
 		std::cout << "First chance." << std::endl;
-		g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
+		//g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
 	}
 	else
 	{
 		std::cout << "Second chance." << std::endl;
-		g_continueStatus = DBG_CONTINUE;
+		//g_continueStatus = DBG_CONTINUE;
 	}
 
-	//g_debuggeeStatus = DebuggeeStatus::SUSPENDED;
-	return TRUE;
+	g_debuggeeStatus = DebuggeeStatus::INTERRUPTED;
+	return FALSE;
 }
 
 

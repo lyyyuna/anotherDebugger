@@ -10,14 +10,14 @@ void OnGo(const Command& cmd)
 
 	if (cmd.size() < 2)
 	{
-		//HandledException(FALSE);
+		HandledException(FALSE);
 		ContinueDebugerSession();
 		return;
 	}
 
 	if (cmd[1] == "c")
 	{
-		//HandledException(TRUE);
+		HandledException(TRUE);
 		ContinueDebugerSession();
 		return;
 	}
