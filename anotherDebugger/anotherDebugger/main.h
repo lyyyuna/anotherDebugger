@@ -44,3 +44,7 @@ enum class DebuggeeStatus
 BOOL dispatchDebugEvent(const DEBUG_EVENT& debugEvent);
 void ContinueDebugerSession();
 DebuggeeStatus getDebuggeeStatus();
+BOOL GetDebuggeeContext(CONTEXT * pContext);
+BOOL ReadDebuggeeMemory(unsigned int address, unsigned int length, void* pData);
+
+void printHex(unsigned int value);

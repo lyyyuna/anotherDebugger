@@ -277,3 +277,23 @@ BOOL OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO* pInfo)
 	return TRUE;
 }
 
+
+BOOL GetDebuggeeContext(CONTEXT * pContext)
+{
+	pContext->ContextFlags = CONTEXT_FULL;
+
+	if (GetThreadContext(g_hThread, pContext) == FALSE)
+	{
+		cout << "Get thread context failed: " << endl;
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL ReadDebuggeeMemory(unsigned int address, unsigned int length, void* pData) 
+{
+	SIZE_T bytesRead;
+
+	return ReadProcessMemory(g_hProcess, (LPCVOID)address, pData, length, &bytesRead);
+}
