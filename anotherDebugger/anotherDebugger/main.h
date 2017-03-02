@@ -34,7 +34,7 @@ void OnShowRegisters(const Command& cmd);
 void OnStopDebug(const Command& cmd);
 void OnGo(const Command& cmd);
 void OnDump(const Command& cmd);
-
+void OnShowSourceLines(const Command& cmd);
 
 enum class DebuggeeStatus
 {
@@ -46,6 +46,7 @@ BOOL dispatchDebugEvent(const DEBUG_EVENT& debugEvent);
 void ContinueDebugerSession();
 DebuggeeStatus getDebuggeeStatus();
 BOOL GetDebuggeeContext(CONTEXT * pContext);
+HANDLE GetDebuggeeHandle();
 BOOL ReadDebuggeeMemory(unsigned int address, unsigned int length, void* pData);
 void StopDebugSeesion();
 

@@ -71,6 +71,7 @@
     <ClCompile Include="goHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="showregisterHandler.cpp" />
+    <ClCompile Include="showsourcelinesHandler.cpp" />
     <ClCompile Include="startHandler.cpp" />
     <ClCompile Include="stopHandler.cpp" />
   </ItemGroup>

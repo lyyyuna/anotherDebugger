@@ -14,6 +14,12 @@ DebuggeeStatus getDebuggeeStatus()
 	return g_debuggeeStatus;
 }
 
+HANDLE GetDebuggeeHandle() 
+{
+	return g_hProcess;
+}
+
+
 void startDebuggerSession(LPCTSTR path)
 {
 	if (g_debuggeeStatus != DebuggeeStatus::NONE)

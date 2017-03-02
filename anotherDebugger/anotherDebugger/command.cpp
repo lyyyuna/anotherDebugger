@@ -16,7 +16,8 @@ map<string, cmdHandler> cmdMap = {
 	{ "g", OnGo },
 	{ "d", OnDump },
 	{ "r", OnShowRegisters },
-	{ "t", OnStopDebug }
+	{ "t", OnStopDebug },
+	{ "l", OnShowSourceLines }
 };
 
 BOOL dispatchCommand(const Command& cmd)
