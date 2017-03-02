@@ -6,6 +6,7 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <DbgHelp.h>
 
 using namespace std;
 
@@ -46,5 +47,6 @@ void ContinueDebugerSession();
 DebuggeeStatus getDebuggeeStatus();
 BOOL GetDebuggeeContext(CONTEXT * pContext);
 BOOL ReadDebuggeeMemory(unsigned int address, unsigned int length, void* pData);
+void StopDebugSeesion();
 
 void printHex(unsigned int value);

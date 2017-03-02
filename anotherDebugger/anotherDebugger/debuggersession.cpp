@@ -138,10 +138,28 @@ BOOL dispatchDebugEvent(const DEBUG_EVENT & debugEvent)
 
 BOOL OnProcessCreated(const CREATE_PROCESS_DEBUG_INFO* pInfo)
 {
-	//CloseHandle(pInfo->hFile);
-	//CloseHandle(pInfo->hProcess);
-	//CloseHandle(pInfo->hThread);
-	std::cout << "Debuggee was created." << std::endl;
+	cout << "Debuggee was created." << endl;
+
+	// init symbol system
+	if (SymInitialize(g_hProcess, NULL, FALSE) == TRUE)
+	{
+		DWORD64 moduleAddress = SymLoadModule64(
+			g_hProcess,
+			pInfo->hFile,
+			NULL,
+			NULL,
+			(DWORD64)pInfo->lpBaseOfImage,
+			0
+			);
+		if (moduleAddress == 0)
+		{
+			cout << "SymLoadModule64 failed: " << GetLastError() << endl;
+		}
+	}
+	else
+	{
+		cout << "SymInitialize failed: " << GetLastError() << endl;
+	}
 	return TRUE;
 }
 
@@ -189,6 +207,9 @@ BOOL OnProcessExited(const EXIT_PROCESS_DEBUG_INFO* pInfo)
 	std::cout << "Debuggee was terminated." << std::endl;
 	cout << "The exit code: " << pInfo->dwExitCode << endl;
 
+	// clean up symbol tree
+	SymCleanup(g_hProcess);
+
 	ContinueDebugEvent(g_processID, g_threadID, DBG_CONTINUE);
 
 	CloseHandle(g_hThread);
@@ -199,7 +220,7 @@ BOOL OnProcessExited(const EXIT_PROCESS_DEBUG_INFO* pInfo)
 	g_processID = 0;
 	g_threadID = 0;
 	g_debuggeeStatus = DebuggeeStatus::NONE;
-	//g_continueStatus = 
+	g_continueStatus = DBG_EXCEPTION_NOT_HANDLED;
 
 	return FALSE;
 }
@@ -266,6 +287,20 @@ BOOL OnRipEvent(const RIP_INFO* pInfo)
 BOOL OnDllLoaded(const LOAD_DLL_DEBUG_INFO* pInfo)
 {
 	std::cout << "A dll was loaded." << std::endl;
+
+	// load symbol for this dll
+	DWORD64 moduleAddress = SymLoadModule64(
+		g_hProcess,
+		pInfo->hFile,
+		NULL,
+		NULL,
+		(DWORD64)pInfo->lpBaseOfDll,
+		0);
+
+	if (moduleAddress == 0)
+	{
+		cout << "SymLoadModule64 failed: " << GetLastError() << endl;
+	}
 	return TRUE;
 }
 
@@ -274,6 +309,8 @@ BOOL OnDllLoaded(const LOAD_DLL_DEBUG_INFO* pInfo)
 BOOL OnDllUnloaded(const UNLOAD_DLL_DEBUG_INFO* pInfo)
 {
 	std::cout << "A dll was unloaded." << std::endl;
+
+	SymUnloadModule64(g_hProcess, (DWORD64)pInfo->lpBaseOfDll);
 	return TRUE;
 }
 
@@ -296,4 +333,16 @@ BOOL ReadDebuggeeMemory(unsigned int address, unsigned int length, void* pData)
 	SIZE_T bytesRead;
 
 	return ReadProcessMemory(g_hProcess, (LPCVOID)address, pData, length, &bytesRead);
+}
+
+void StopDebugSeesion() 
+{
+	if (TerminateProcess(g_hProcess, -1) == TRUE) 
+	{
+		ContinueDebugerSession();
+	}
+	else {
+
+		cout << "TerminateProcess failed: " << GetLastError() << endl;
+	}
 }
