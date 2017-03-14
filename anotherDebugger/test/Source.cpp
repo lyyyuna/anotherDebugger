@@ -8,7 +8,7 @@ using namespace::std;
 
 int main()
 {
-	
+	__asm{int 3};
 	cout << "hello, world" << endl;
 	return 0;
 }

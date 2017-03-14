@@ -28,6 +28,7 @@ namespace anotherdebugger
 		void continueDebuggerSession();
 		bool dispatchDebugEvent(const DEBUG_EVENT &);
 		void stopDebugSession();
+		bool getDebuggeeContext(CONTEXT * pContext);
 
 		// debugger event handler
 		bool onProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
@@ -48,6 +49,11 @@ namespace anotherdebugger
 		void onStopDebug(const Command & cmds);
 		void onShowRegisters(const Command & cmds);
 		void onShowSourceLines(const Command & cmds);
+
+		// helper function
+		void displayOneLine(LPCTSTR srcfile, string & line, int linenum, bool isCurline);
+		void displaySourceLines(LPCTSTR srcfile, int linenum, DWORD64 addr, int start, int len);
+		void displayFromCurLine(LPCTSTR srcfile, int linenum, DWORD64 addr, int len);
 
 		// debugger status
 		enum class DebuggeeStatus

@@ -298,4 +298,16 @@ namespace anotherdebugger
 			cout << "TerminateProcess failed: " << GetLastError() << endl;
 		}
 	}
+
+	bool AnotherDebugger::getDebuggeeContext(CONTEXT * pContext)
+	{
+		pContext->ContextFlags = CONTEXT_FULL;
+
+		if (GetThreadContext(this->debuggeehThread, pContext) == FALSE)
+		{
+			cout << "Get thread context failed: " << endl;
+			return false;
+		}
+		return true;
+	}
 }
