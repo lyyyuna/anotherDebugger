@@ -31,7 +31,7 @@ namespace anotherdebugger
 			STEP_OVER,
 			STEP_OUT,
 			USER,
-			OTHER
+			CODE
 		};
 
 	public:
@@ -76,7 +76,17 @@ namespace anotherdebugger
 
 		// breakpoint
 		void resetBreakPoint();
-		BpType getBreakPoint(DWORD);
+		BpType getBreakPointType(DWORD);
+		bool onBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
+		bool onSingleStepTrap(const EXCEPTION_DEBUG_INFO * pInfo);
+		bool onSingleStepCommonProcedures();  // common steps for singlesteptrap and stepOver breakpoint
+		bool onNormalBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
+		bool onUserBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
+		bool onSingleStepCommonProcedures();
+		bool onStepOutBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
+		void backwardDebuggeeEIP();
+		void deleteStepOverBreakPoint();
+
 
 		struct BreakPoint
 		{
@@ -99,5 +109,11 @@ namespace anotherdebugger
 		BreakPoint bpStepOver;
 		BreakPoint bpStepOut;
 		list<BreakPoint> bpUserList;
+
+		// flag
+		struct Flag
+		{
+			static DWORD continueStatus;
+		};
 	};
 }

@@ -61,7 +61,7 @@ namespace anotherdebugger
 		}
 		else
 		{
-			ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, DBG_EXCEPTION_NOT_HANDLED);
+			ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, Flag::continueStatus);
 		}
 
 		DEBUG_EVENT debugEvent;
@@ -71,7 +71,7 @@ namespace anotherdebugger
 			debuggeethreadID = debugEvent.dwThreadId;
 			if (dispatchDebugEvent(debugEvent) == TRUE)
 			{
-				ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, DBG_EXCEPTION_NOT_HANDLED);
+				ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, Flag::continueStatus);
 			}
 			else {
 				break;
@@ -174,9 +174,9 @@ namespace anotherdebugger
 		switch (pInfo->ExceptionRecord.ExceptionCode)
 		{
 		case EXCEPTION_BREAKPOINT:
-
+			return onBreakPoint(pInfo);
 		case EXCEPTION_SINGLE_STEP:
-
+			return onSingleStepTrap(pInfo);
 		}
 
 		if (pInfo->dwFirstChance == TRUE)

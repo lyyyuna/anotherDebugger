@@ -16,7 +16,7 @@ namespace anotherdebugger
 		bpStepOut.content = 0;
 	}
 
-	AnotherDebugger::BpType AnotherDebugger::getBreakPoint(DWORD addr)
+	AnotherDebugger::BpType AnotherDebugger::getBreakPointType(DWORD addr)
 	{
 		if (isInitBpSet == false)
 		{
@@ -43,7 +43,35 @@ namespace anotherdebugger
 			}
 		}
 
-		// other type breakpoint
-		return BpType::OTHER;
+		// other type breakpoint (maybe in the debuggee program itself)
+		return BpType::CODE;
+	}
+
+	bool AnotherDebugger::onBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo)
+	{
+		auto bpType = getBreakPointType((DWORD)(pInfo->ExceptionRecord.ExceptionAddress));
+
+		switch (bpType)
+		{
+		case BpType::INIT:
+			Flag::continueStatus = DBG_CONTINUE;
+			return true;
+
+		case BpType::CODE:
+			return onNormalBreakPoint(pInfo);
+
+		case BpType::STEP_OVER:
+			deleteStepOverBreakPoint();
+			backwardDebuggeeEIP();
+			return onSingleStepCommonProcedures();
+
+		case BpType::USER:
+			return onUserBreakPoint(pInfo);
+
+		case BpType::STEP_OUT:
+			return onStepOutBreakPoint(pInfo);
+		}
+
+		return true;
 	}
 }
