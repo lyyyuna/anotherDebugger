@@ -65,6 +65,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="breakpointhandler.cpp" />
     <ClCompile Include="debuggerloop.cpp" />
     <ClCompile Include="debuggersession.cpp" />
     <ClCompile Include="dumphandler.cpp" />

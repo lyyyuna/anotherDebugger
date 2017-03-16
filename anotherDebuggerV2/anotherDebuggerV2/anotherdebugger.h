@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <map>
+#include <list>
 #include <Windows.h>
 
 using namespace std;
@@ -14,6 +15,24 @@ namespace anotherdebugger
 	{
 	public:
 		bool DEBUG;
+
+		// debugger status
+		enum class DebuggeeStatus
+		{
+			NONE,
+			SUSPENDED,
+			INTERRUPTED
+		};
+
+		// breakpoint type
+		enum class BpType
+		{
+			INIT,
+			STEP_OVER,
+			STEP_OUT,
+			USER,
+			OTHER
+		};
 
 	public:
 		// debugger loop
@@ -55,12 +74,14 @@ namespace anotherdebugger
 		void displaySourceLines(LPCTSTR srcfile, int linenum, DWORD64 addr, int start, int len);
 		void displayFromCurLine(LPCTSTR srcfile, int linenum, DWORD64 addr, int len);
 
-		// debugger status
-		enum class DebuggeeStatus
+		// breakpoint
+		void resetBreakPoint();
+		BpType getBreakPoint(DWORD);
+
+		struct BreakPoint
 		{
-			NONE,
-			SUSPENDED,
-			INTERRUPTED
+			DWORD address;
+			BYTE content;
 		};
 		
 		typedef void(AnotherDebugger::*cmdhandler)(const Command &);
@@ -72,5 +93,11 @@ namespace anotherdebugger
 		HANDLE debuggeehThread;
 		DWORD debuggeeprocessID;
 		DWORD debuggeethreadID;
+
+		// breakpoint
+		bool isInitBpSet;
+		BreakPoint bpStepOver;
+		BreakPoint bpStepOut;
+		list<BreakPoint> bpUserList;
 	};
 }

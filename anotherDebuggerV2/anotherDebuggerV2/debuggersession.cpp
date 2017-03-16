@@ -131,6 +131,8 @@ namespace anotherdebugger
 	{
 		cout << "Debuggee created." << endl;
 
+		this->resetBreakPoint();
+
 		if (SymInitialize(debuggeehProcess, NULL, FALSE) == TRUE)
 		{
 			DWORD64 moduleAddress = SymLoadModule64(
@@ -168,6 +170,15 @@ namespace anotherdebugger
 				<< pInfo->ExceptionRecord.ExceptionAddress << "." << std::endl
 				<< "Exception code: " << pInfo->ExceptionRecord.ExceptionCode << std::dec << std::endl;
 		}
+
+		switch (pInfo->ExceptionRecord.ExceptionCode)
+		{
+		case EXCEPTION_BREAKPOINT:
+
+		case EXCEPTION_SINGLE_STEP:
+
+		}
+
 		if (pInfo->dwFirstChance == TRUE)
 		{
 			if (DEBUG == true)
