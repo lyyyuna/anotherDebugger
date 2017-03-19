@@ -84,15 +84,15 @@ namespace anotherdebugger
 
 				case 126:
 					cout << "Debug info in current module has not loaded." << endl;
-					return;
+					return 0;
 
 				case 487:
 					cout << "No debug info in current module." << endl;
-					return;
+					return 0;
 
 				default:
 					cout << "SymGetLineFromAddr64 failed: " << errorCode << endl;
-					return;
+					return 0;
 				}
 			}
 
@@ -106,7 +106,7 @@ namespace anotherdebugger
 				&lineInfo) == FALSE) {
 
 				std::wcout << TEXT("SymGetLineFromName64 failed: ") << GetLastError() << std::endl;
-				return;
+				return 0;
 			}
 
 			if (displacement == 0)
@@ -372,7 +372,17 @@ namespace anotherdebugger
 
 	bool AnotherDebugger::onSingleStepCommonProcedures()
 	{
+		if (isLineChanged() == false)
+		{
+			if (true == FLAG.isBeingStepOver)
+			{
+				CONTEXT c;
+				getDebuggeeContext(&c);
 
+			}
+		}
+
+		return false;
 	}
 
 	void AnotherDebugger::saveCurrentLineInfo()

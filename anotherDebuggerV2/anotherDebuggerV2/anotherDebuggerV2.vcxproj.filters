@@ -45,11 +45,14 @@
     <ClCompile Include="breakpointhandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stepouthandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stepoverhandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="debuggersession.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="anotherdebugger.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -331,7 +331,7 @@ namespace anotherdebugger
 
 	bool AnotherDebugger::setDebuggeeContext(CONTEXT * pContext)
 	{
-		if (SetThreadContext(debuggeehProcess, pContext) == FALSE)
+		if (SetThreadContext(debuggeehThread, pContext) == FALSE)
 		{
 			cout << "Set Context (SetThreadContext) failed: " << GetLastError() << endl;
 		}

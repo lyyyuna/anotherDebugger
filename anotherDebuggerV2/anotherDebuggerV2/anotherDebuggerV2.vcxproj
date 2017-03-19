@@ -74,11 +74,12 @@
     <ClCompile Include="showregisterhandler.cpp" />
     <ClCompile Include="showsourcelineshandler.cpp" />
     <ClCompile Include="starthandler.cpp" />
+    <ClCompile Include="stepouthandler.cpp" />
+    <ClCompile Include="stepoverhandler.cpp" />
     <ClCompile Include="stophandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anotherdebugger.h" />
-    <ClInclude Include="debuggersession.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
