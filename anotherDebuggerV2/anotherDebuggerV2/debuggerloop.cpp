@@ -15,7 +15,7 @@ namespace anotherdebugger
 		debuggeeprocessID(0),
 		debuggeethreadID(0)
 	{
-		resetBreakPoint();
+		resetBreakPointHandler();
 
 		cmdmap.insert(make_pair("s", &AnotherDebugger::onStartDebug));
 		cmdmap.insert(make_pair("g", &AnotherDebugger::onGo));

@@ -34,6 +34,41 @@ namespace anotherdebugger
 			CODE
 		};
 
+		// breakpoint
+		struct BreakPoint
+		{
+			DWORD address;
+			BYTE content;
+		};
+
+		// 
+		typedef void(AnotherDebugger::*cmdhandler)(const Command &);
+		map<string, cmdhandler> cmdmap;
+		Command cmds;
+		DebuggeeStatus debuggeeStatus;
+		DWORD continueStatus;
+		HANDLE debuggeehProcess;
+		HANDLE debuggeehThread;
+		DWORD debuggeeprocessID;
+		DWORD debuggeethreadID;
+
+		// breakpoint
+		bool isInitBpSet;
+		BreakPoint bpStepOver;
+		BreakPoint bpStepOut;
+		list<BreakPoint> bpUserList;
+
+
+		// flag
+		struct Flag
+		{
+			DWORD continueStatus;
+			DWORD resetUserBreakPointAddress;
+			bool isBeingStepOver;
+			bool isBeingStepOut;
+			bool isBeingSingleInstruction;
+		} FLAG;
+
 	public:
 		// debugger loop
 		AnotherDebugger(bool flag);
@@ -48,6 +83,7 @@ namespace anotherdebugger
 		bool dispatchDebugEvent(const DEBUG_EVENT &);
 		void stopDebugSession();
 		bool getDebuggeeContext(CONTEXT * pContext);
+		bool setDebuggeeContext(CONTEXT * pContext);
 
 		// debugger event handler
 		bool onProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
@@ -68,6 +104,7 @@ namespace anotherdebugger
 		void onStopDebug(const Command & cmds);
 		void onShowRegisters(const Command & cmds);
 		void onShowSourceLines(const Command & cmds);
+		void onSetBreakPoint(const Command & cmds);
 
 		// helper function
 		void displayOneLine(LPCTSTR srcfile, string & line, int linenum, bool isCurline);
@@ -75,7 +112,7 @@ namespace anotherdebugger
 		void displayFromCurLine(LPCTSTR srcfile, int linenum, DWORD64 addr, int len);
 
 		// breakpoint
-		void resetBreakPoint();
+		void resetBreakPointHandler();
 		BpType getBreakPointType(DWORD);
 		bool onBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
 		bool onSingleStepTrap(const EXCEPTION_DEBUG_INFO * pInfo);
@@ -84,36 +121,43 @@ namespace anotherdebugger
 		bool onUserBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
 		bool onSingleStepCommonProcedures();
 		bool onStepOutBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
-		void backwardDebuggeeEIP();
 		void deleteStepOverBreakPoint();
+		void deleteStepOutBreakPoint();
+		void recoverBreakPoint(const BreakPoint & bp);
 
 
-		struct BreakPoint
+		// inline breakpoint helper
+		BOOL writeDebuggeeMemory(unsigned int address, unsigned int length, const void* pData) 
 		{
-			DWORD address;
-			BYTE content;
-		};
-		
-		typedef void(AnotherDebugger::*cmdhandler)(const Command &);
-		map<string, cmdhandler> cmdmap;
-		Command cmds;
-		DebuggeeStatus debuggeeStatus;
-		DWORD continueStatus;
-		HANDLE debuggeehProcess;
-		HANDLE debuggeehThread;
-		DWORD debuggeeprocessID;
-		DWORD debuggeethreadID;
 
-		// breakpoint
-		bool isInitBpSet;
-		BreakPoint bpStepOver;
-		BreakPoint bpStepOut;
-		list<BreakPoint> bpUserList;
+			SIZE_T byteWriten;
 
-		// flag
-		struct Flag
+			return WriteProcessMemory(debuggeehProcess, (LPVOID)address, pData, length, &byteWriten);
+		}
+
+		BOOL readDebuggeeMemory(unsigned int address, unsigned int length, void* pData) 
 		{
-			static DWORD continueStatus;
-		};
+
+			SIZE_T bytesRead;
+
+			return ReadProcessMemory(debuggeehProcess, (LPCVOID)address, pData, length, &bytesRead);
+		}
+
+		void backwardDebuggeeEIP()
+		{
+			CONTEXT c;
+			getDebuggeeContext(&c);
+			c.Eip -= 1;
+			setDebuggeeContext(&c);
+		}
+
+		void setCPUTrapFlag()
+		{
+			CONTEXT c;
+			getDebuggeeContext(&c);
+			c.EFlags |= 0x100;
+			setDebuggeeContext(&c);
+		}
+
 	};
 }

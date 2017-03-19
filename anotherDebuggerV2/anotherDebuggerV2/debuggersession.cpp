@@ -61,7 +61,7 @@ namespace anotherdebugger
 		}
 		else
 		{
-			ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, Flag::continueStatus);
+			ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, FLAG.continueStatus);
 		}
 
 		DEBUG_EVENT debugEvent;
@@ -71,7 +71,7 @@ namespace anotherdebugger
 			debuggeethreadID = debugEvent.dwThreadId;
 			if (dispatchDebugEvent(debugEvent) == TRUE)
 			{
-				ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, Flag::continueStatus);
+				ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, FLAG.continueStatus);
 			}
 			else {
 				break;
@@ -131,7 +131,7 @@ namespace anotherdebugger
 	{
 		cout << "Debuggee created." << endl;
 
-		this->resetBreakPoint();
+		this->resetBreakPointHandler();
 
 		if (SymInitialize(debuggeehProcess, NULL, FALSE) == TRUE)
 		{
@@ -319,6 +319,16 @@ namespace anotherdebugger
 			cout << "Get thread context failed: " << endl;
 			return false;
 		}
+		return true;
+	}
+
+	bool AnotherDebugger::setDebuggeeContext(CONTEXT * pContext)
+	{
+		if (SetThreadContext(debuggeehProcess, pContext) == FALSE)
+		{
+			cout << "Set Context (SetThreadContext) failed: " << GetLastError() << endl;
+		}
+
 		return true;
 	}
 }
