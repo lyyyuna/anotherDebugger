@@ -88,7 +88,7 @@ namespace anotherdebugger
 			cout << "PF  1" << endl;;
 		}
 		else {
-			cout << "CF  0" << endl;
+			cout << "PF  0" << endl;
 		}
 
 		if ((context.EFlags & 0x10) != 0)
@@ -96,7 +96,7 @@ namespace anotherdebugger
 			cout << "AF  1" << endl;;
 		}
 		else {
-			cout << "CF  0" << endl;
+			cout << "AF  0" << endl;
 		}
 
 		if ((context.EFlags & 0x40) != 0)
@@ -104,7 +104,7 @@ namespace anotherdebugger
 			cout << "ZF  1" << endl;;
 		}
 		else {
-			cout << "CF  0" << endl;
+			cout << "ZF  0" << endl;
 		}
 
 		if ((context.EFlags & 0x80) != 0)
@@ -112,7 +112,7 @@ namespace anotherdebugger
 			cout << "SF  1" << endl;;
 		}
 		else {
-			cout << "CF  0" << endl;
+			cout << "SF  0" << endl;
 		}
 
 		if ((context.EFlags & 0x400) != 0)
@@ -120,7 +120,7 @@ namespace anotherdebugger
 			cout << "OF  1" << endl;;
 		}
 		else {
-			std::cout << "CF  0" << endl;
+			std::cout << "OF  0" << endl;
 		}
 
 		if ((context.EFlags & 0x200) != 0)
@@ -128,8 +128,8 @@ namespace anotherdebugger
 			std::cout << "DF  1" << endl;;
 		}
 		else {
-			std::cout << "CF  0" << endl;
+			std::cout << "DF  0" << endl;
 		}
-		std::cout << "CF  0" << endl;
+		std::cout << endl;
 	}
 }

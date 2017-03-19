@@ -74,6 +74,7 @@
     <ClCompile Include="showregisterhandler.cpp" />
     <ClCompile Include="showsourcelineshandler.cpp" />
     <ClCompile Include="starthandler.cpp" />
+    <ClCompile Include="stepinhandler.cpp" />
     <ClCompile Include="stepouthandler.cpp" />
     <ClCompile Include="stepoverhandler.cpp" />
     <ClCompile Include="stophandler.cpp" />

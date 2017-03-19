@@ -11,6 +11,12 @@ using namespace std;
 
 namespace anotherdebugger
 {
+	void AnotherDebugger::setStepOverBreakPointAt(DWORD addr)
+	{
+		bpStepOver.address = addr;
+		bpStepOver.content = setBreakPointAt(addr);
+	}
+
 	void AnotherDebugger::deleteStepOverBreakPoint()
 	{
 

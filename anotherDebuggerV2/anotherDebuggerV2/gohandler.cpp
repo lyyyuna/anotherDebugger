@@ -13,6 +13,8 @@ namespace anotherdebugger
 			return;
 		}
 
+		FLAG.isBeingSingleInstruction = false;
+
 		if (cmds.size() < 2)
 		{
 			//HandledException(FALSE);
