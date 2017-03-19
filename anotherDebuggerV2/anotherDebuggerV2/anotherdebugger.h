@@ -58,6 +58,10 @@ namespace anotherdebugger
 		BreakPoint bpStepOut;
 		list<BreakPoint> bpUserList;
 
+		struct LineInfo{
+			string filePath;
+			DWORD lineNumber;
+		};
 
 		// flag
 		struct Flag
@@ -67,7 +71,9 @@ namespace anotherdebugger
 			bool isBeingStepOver;
 			bool isBeingStepOut;
 			bool isBeingSingleInstruction;
+			LineInfo glf;
 		} FLAG;
+
 
 	public:
 		// debugger loop
@@ -84,6 +90,7 @@ namespace anotherdebugger
 		void stopDebugSession();
 		bool getDebuggeeContext(CONTEXT * pContext);
 		bool setDebuggeeContext(CONTEXT * pContext);
+		void setDebuggeeEntryPoint();
 
 		// debugger event handler
 		bool onProcessCreated(const CREATE_PROCESS_DEBUG_INFO*);
@@ -119,12 +126,18 @@ namespace anotherdebugger
 		bool onSingleStepCommonProcedures();  // common steps for singlesteptrap and stepOver breakpoint
 		bool onNormalBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
 		bool onUserBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
-		bool onSingleStepCommonProcedures();
 		bool onStepOutBreakPoint(const EXCEPTION_DEBUG_INFO * pInfo);
+		bool setUserBreakPointAt(DWORD);
+		bool deleteUserBreakPointAt(DWORD);
 		void deleteStepOverBreakPoint();
 		void deleteStepOutBreakPoint();
 		void recoverBreakPoint(const BreakPoint & bp);
 
+		// breakpoint helper
+		bool isLineChanged();
+		bool getCurrentLineInfo(LineInfo &);
+		bool isCallInstruction();
+		void saveCurrentLineInfo();
 
 		// inline breakpoint helper
 		BOOL writeDebuggeeMemory(unsigned int address, unsigned int length, const void* pData) 
@@ -157,6 +170,21 @@ namespace anotherdebugger
 			getDebuggeeContext(&c);
 			c.EFlags |= 0x100;
 			setDebuggeeContext(&c);
+		}
+
+		BYTE setBreakPointAt(DWORD addr)
+		{
+			BYTE byte;
+			readDebuggeeMemory(addr, 1, &byte);
+
+			BYTE intInst = 0xCC;
+			writeDebuggeeMemory(addr, 1, &intInst);
+			return byte;
+		}
+
+		void recoverBreakPoint(BreakPoint & bp)
+		{
+			writeDebuggeeMemory(bp.address, 1, &bp.content);
 		}
 
 	};

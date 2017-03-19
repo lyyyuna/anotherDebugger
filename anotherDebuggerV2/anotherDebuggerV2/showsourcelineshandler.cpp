@@ -196,6 +196,15 @@ namespace anotherdebugger
 
 	void AnotherDebugger::displayOneLine(LPCTSTR srcfile, string & line, int linenum, bool isCurline)
 	{
+		auto printHex = [](unsigned int value) -> void
+		{
+			cout << hex << uppercase;
+
+			cout << " 0x";
+
+			cout << std::setw(8) << std::setfill('0') << value << std::dec << std::nouppercase << std::flush;
+		};
+
 		if (isCurline == true)
 		{
 			cout << "=>";
@@ -223,6 +232,15 @@ namespace anotherdebugger
 		}
 
 		cout << setw(4) << setfill(' ') << linenum << " ";
+
+		if (displacement == 0) {
+
+			printHex((unsigned int)lineinfo.Address);
+		}
+		else {
+
+			std::wcout << std::setw(8) << TEXT(" ");
+		}
 
 		cout << line << endl;
 	}

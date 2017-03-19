@@ -1,8 +1,11 @@
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <string>
 #include <list>
 #include "anotherdebugger.h"
+#include <Windows.h>
+#include <DbgHelp.h>
 
 using namespace std;
 
@@ -24,6 +27,8 @@ namespace anotherdebugger
 		FLAG.isBeingStepOut = false;
 		FLAG.isBeingStepOver = false;
 		FLAG.resetUserBreakPointAddress = 0;
+		FLAG.glf.lineNumber = 0;
+		FLAG.glf.filePath = string();
 	}
 
 	void AnotherDebugger::onSetBreakPoint(const Command & cmds)
@@ -58,13 +63,153 @@ namespace anotherdebugger
 			}
 		};
 
+		auto getBreakPointAddress = [this](int line) -> DWORD
+		{
+			CONTEXT context;
+			getDebuggeeContext(&context);
+
+			IMAGEHLP_LINE64 lineInfo = { 0 };
+			lineInfo.SizeOfStruct = sizeof(lineInfo);
+			DWORD displacement = 0;
+
+			if (SymGetLineFromAddr64(
+				debuggeehProcess,
+				context.Eip,
+				&displacement,
+				&lineInfo) == FALSE) {
+
+				DWORD errorCode = GetLastError();
+
+				switch (errorCode) {
+
+				case 126:
+					cout << "Debug info in current module has not loaded." << endl;
+					return;
+
+				case 487:
+					cout << "No debug info in current module." << endl;
+					return;
+
+				default:
+					cout << "SymGetLineFromAddr64 failed: " << errorCode << endl;
+					return;
+				}
+			}
+
+			LONG displacement2 = 0;
+			if (SymGetLineFromName64(
+				debuggeehProcess,
+				NULL,
+				lineInfo.FileName,
+				line,
+				&displacement2,
+				&lineInfo) == FALSE) {
+
+				std::wcout << TEXT("SymGetLineFromName64 failed: ") << GetLastError() << std::endl;
+				return;
+			}
+
+			if (displacement == 0)
+			{
+				// find the right address of the line.
+				return (DWORD)lineInfo.Address;
+			}
+			else
+			{
+				// not find. maybe it is a blank line.
+				return 0;
+			}
+		};
+
 		if (cmds.size() == 1)
 		{
 			displayBreakPoints();
 			return;
 		}
 
+		if (cmds.size() != 2)
+		{
+			cout << "Invalid params." << endl;
+			return;
+		}
 
+		unsigned int line;
+		stringstream ss(cmds[1]);
+		ss >> line;
+		auto bpAddress = getBreakPointAddress(line);
+		if (bpAddress == 0)
+		{
+			cout << "Cannot deduce the right breakpoint address, please set another one." << endl;
+			return;
+		}
+
+		if (cmds[0] == "b")
+		{
+			if (true == setUserBreakPointAt(bpAddress))
+			{
+				cout << "Set break point success." << endl;
+			}
+			else {
+				cout << "Set break point failed." << endl;
+			}
+			return;
+		}
+		else if (cmds[0] == "bp")
+		{
+			if (true == deleteUserBreakPointAt(bpAddress))
+			{
+				cout << "delete break point success." << endl;
+			}
+			else {
+				cout << "delete break point failed." << endl;
+			}
+			return;
+		}
+
+		cout << "Invalid params" << endl;
+		return;
+	}
+
+	bool AnotherDebugger::setUserBreakPointAt(DWORD addr)
+	{
+		for (auto it = bpUserList.begin();
+			it != bpUserList.end();
+			++it)
+		{
+			if (it->address == addr)
+			{
+				cout << "The break point already exist." << endl;
+				return false;
+			}
+		}
+
+		BreakPoint newBp;
+		newBp.address = addr;
+		newBp.content = setBreakPointAt(addr);
+
+		bpUserList.push_back(newBp);
+
+		return true;
+	}
+
+	bool AnotherDebugger::deleteUserBreakPointAt(DWORD addr)
+	{
+		for (auto it = bpUserList.begin();
+			it != bpUserList.end();
+			++it)
+		{
+			if (it->address == addr)
+			{
+				recoverBreakPoint(*it);
+				bpUserList.erase(it);
+
+				return true;
+			}
+		}
+
+		cout << "The break point does not exist. " << endl;
+
+		return false;
 	}
 
 	AnotherDebugger::BpType AnotherDebugger::getBreakPointType(DWORD addr)
@@ -223,5 +368,60 @@ namespace anotherdebugger
 
 		FLAG.continueStatus = DBG_CONTINUE;
 		return true;
+	}
+
+	bool AnotherDebugger::onSingleStepCommonProcedures()
+	{
+
+	}
+
+	void AnotherDebugger::saveCurrentLineInfo()
+	{
+		getCurrentLineInfo(FLAG.glf);
+	}
+
+	bool AnotherDebugger::isLineChanged()
+	{
+		LineInfo lf;
+		if (false == getCurrentLineInfo(lf))
+		{
+			return false;
+		}
+
+		if (lf.lineNumber == FLAG.glf.lineNumber &&
+			lf.filePath == FLAG.glf.filePath)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool AnotherDebugger::getCurrentLineInfo(LineInfo & lf)
+	{
+		CONTEXT context;
+		getDebuggeeContext(&context);
+
+		DWORD displacement;
+		IMAGEHLP_LINE64 lineInfo = { 0 };
+		lineInfo.SizeOfStruct = sizeof(lineInfo);
+
+		if (SymGetLineFromAddr64(
+			debuggeehProcess,
+			context.Eip,
+			&displacement,
+			&lineInfo) == TRUE) {
+
+			lf.filePath = string(lineInfo.FileName);
+			lf.lineNumber = lineInfo.LineNumber;
+
+			return true;
+		}
+		else {
+			lf.filePath = string();
+			lf.lineNumber = 0;
+
+			return false;
+		}
 	}
 }

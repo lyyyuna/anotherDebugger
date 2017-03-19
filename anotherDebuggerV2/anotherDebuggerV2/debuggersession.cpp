@@ -147,6 +147,10 @@ namespace anotherdebugger
 			{
 				cout << "SymLoadModule64 failed: " << GetLastError() << endl;
 			}
+			else {
+				// set entry stop 
+				setDebuggeeEntryPoint();
+			}
 		}
 		else
 		{
@@ -205,6 +209,9 @@ namespace anotherdebugger
 
 		// clean up symbol tree
 		SymCleanup(debuggeehProcess);
+
+		// clean breakpoint
+		resetBreakPointHandler();
 
 		ContinueDebugEvent(debuggeeprocessID, debuggeethreadID, DBG_CONTINUE);
 
@@ -330,5 +337,44 @@ namespace anotherdebugger
 		}
 
 		return true;
+	}
+
+	void AnotherDebugger::setDebuggeeEntryPoint()
+	{
+		auto getEntryPointAddress = [this]() -> DWORD
+		{
+			static LPCTSTR entryPointNames[] = {
+				TEXT("main"),
+				TEXT("wmain"),
+				TEXT("WinMain"),
+				TEXT("wWinMain"),
+			};
+
+			SYMBOL_INFO symbolInfo = { 0 };
+			symbolInfo.SizeOfStruct = sizeof(SYMBOL_INFO);
+
+			for (int index = 0; index != sizeof(entryPointNames) / sizeof(LPCTSTR); ++index) {
+
+				if (SymFromName(this->debuggeehProcess, entryPointNames[index], &symbolInfo) == TRUE) {
+					return (DWORD)symbolInfo.Address;
+				}
+			}
+
+			return 0;
+		};
+
+		auto mainAddress = getEntryPointAddress();
+
+		if (mainAddress != 0)
+		{
+			if (setUserBreakPointAt(mainAddress) == false)
+			{
+				cout << "Set break point at entry point failed." << endl;
+			}
+		} 
+		else {
+			cout << "Cannot find the entry point." << endl;
+		}
+
 	}
 }

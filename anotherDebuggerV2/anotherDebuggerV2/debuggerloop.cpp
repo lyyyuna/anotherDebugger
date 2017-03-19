@@ -23,6 +23,8 @@ namespace anotherdebugger
 		cmdmap.insert(make_pair("r", &AnotherDebugger::onShowRegisters));
 		cmdmap.insert(make_pair("t", &AnotherDebugger::onStopDebug));
 		cmdmap.insert(make_pair("l", &AnotherDebugger::onShowSourceLines));
+		cmdmap.insert(make_pair("b", &AnotherDebugger::onSetBreakPoint));
+		cmdmap.insert(make_pair("bd", &AnotherDebugger::onSetBreakPoint));
 	}
 
 	void AnotherDebugger::startDebuggerLoop()
