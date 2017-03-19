@@ -350,7 +350,7 @@ namespace anotherdebugger
 			{
 				if (it->address == this->FLAG.resetUserBreakPointAddress)
 				{
-
+					setBreakPointAt(it->address);
 					this->FLAG.resetUserBreakPointAddress = 0;
 				}
 			}
