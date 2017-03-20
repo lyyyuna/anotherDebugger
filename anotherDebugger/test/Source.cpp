@@ -3,22 +3,24 @@
 
 using namespace::std;
 
-void func()
+int func()
 {
+	int a;
+	a = 1 + 2;
+	a = a * a;
 	cout << "Another hello." << endl;
-	return;
+
+	return a;
 }
 
 int main()
 {
 	for (int i = 0; i < 2; i++)
 	{
-		cout << "hello, world" << endl;
-		cout << "1" << endl;
-		cout << "11" << endl;
-		cout << "111" << endl;
-		cout << "1111" << endl;
-		cout << "11111" << endl;
+		int a;
+		a = 1 + 2;
+		func();
+		cout << "hello world." << endl;
 	}
 	return 0;
 }

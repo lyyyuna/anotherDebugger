@@ -113,6 +113,8 @@ namespace anotherdebugger
 		void onShowSourceLines(const Command & cmds);
 		void onSetBreakPoint(const Command & cmds);
 		void onStepIn(const Command & cmds);
+		void onStepOver(const Command & cmds);
+		void onStepOut(const Command & cmds);
 
 		// helper function
 		void displayOneLine(LPCTSTR srcfile, string & line, int linenum, bool isCurline);
@@ -132,6 +134,7 @@ namespace anotherdebugger
 		bool deleteUserBreakPointAt(DWORD);
 		void setStepOverBreakPointAt(DWORD);
 		void deleteStepOverBreakPoint();
+		void setStepOutBreakPointAt(DWORD);
 		void deleteStepOutBreakPoint();
 		void recoverBreakPoint(const BreakPoint & bp);
 
@@ -140,6 +143,8 @@ namespace anotherdebugger
 		bool getCurrentLineInfo(LineInfo &);
 		int isCallInstruction(DWORD);
 		void saveCurrentLineInfo();
+		DWORD retInstructionLen(DWORD addr);
+		DWORD getRetInstructionAddr();
 
 		// inline breakpoint helper
 		BOOL writeDebuggeeMemory(unsigned int address, unsigned int length, const void* pData) 
