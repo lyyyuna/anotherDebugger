@@ -71,6 +71,7 @@
     <ClCompile Include="dumphandler.cpp" />
     <ClCompile Include="gohandler.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="showlocalvariableshandler.cpp" />
     <ClCompile Include="showregisterhandler.cpp" />
     <ClCompile Include="showsourcelineshandler.cpp" />
     <ClCompile Include="starthandler.cpp" />
@@ -81,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anotherdebugger.h" />
+    <ClInclude Include="SymbolType.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

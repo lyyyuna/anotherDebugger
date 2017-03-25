@@ -7,6 +7,8 @@ using namespace std;
 
 namespace anotherdebugger
 {
+	AnotherDebugger *g_ad;
+
 	AnotherDebugger::AnotherDebugger(bool flag) : 
 		DEBUG(flag),
 		debuggeeStatus(DebuggeeStatus::NONE),
@@ -28,12 +30,20 @@ namespace anotherdebugger
 		cmdmap.insert(make_pair("in", &AnotherDebugger::onStepIn));
 		cmdmap.insert(make_pair("over", &AnotherDebugger::onStepOver));
 		cmdmap.insert(make_pair("out", &AnotherDebugger::onStepOut));
+		cmdmap.insert(make_pair("llv", &AnotherDebugger::onShowLocalVariables));
+		cmdmap.insert(make_pair("lgv", &AnotherDebugger::onShowGlobalVariables));
 	}
 
 	void AnotherDebugger::startDebuggerLoop()
 	{
 		cout << "Another Debugger by lyyyuna" << endl;
 		
+		if (g_ad != this)
+		{
+			cout << "Should first init the global AnotherDebugger pointer" << endl;
+			return;
+		}
+
 		string cmdline;
 
 		while (true)

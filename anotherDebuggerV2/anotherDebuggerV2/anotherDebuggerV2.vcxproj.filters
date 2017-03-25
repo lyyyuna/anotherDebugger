@@ -54,9 +54,15 @@
     <ClCompile Include="stepinhandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="showlocalvariableshandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anotherdebugger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

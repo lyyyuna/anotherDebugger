@@ -1,9 +1,12 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <iostream>
 #include <map>
 #include <list>
 #include <Windows.h>
+#include "SymbolType.h"
 
 using namespace std;
 
@@ -115,6 +118,8 @@ namespace anotherdebugger
 		void onStepIn(const Command & cmds);
 		void onStepOver(const Command & cmds);
 		void onStepOut(const Command & cmds);
+		void onShowLocalVariables(const Command &);
+		void onShowGlobalVariables(const Command &);
 
 		// helper function
 		void displayOneLine(LPCTSTR srcfile, string & line, int linenum, bool isCurline);
@@ -145,6 +150,14 @@ namespace anotherdebugger
 		void saveCurrentLineInfo();
 		DWORD retInstructionLen(DWORD addr);
 		DWORD getRetInstructionAddr();
+
+		// list local variables helper
+		void showVariables(list<VariableInfo> &);
+		// DWORD getSymbolAddr(PSYMBOL_INFO pSymbolInfo);
+		// BOOL CALLBACK EnumVariablesCallBack(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
+		void showVariableSummary(const VariableInfo & pVarInfo);
+		void showVariableValue(const VariableInfo & pVarInfo);
+
 
 		// inline breakpoint helper
 		BOOL writeDebuggeeMemory(unsigned int address, unsigned int length, const void* pData) 
@@ -195,4 +208,6 @@ namespace anotherdebugger
 		}
 
 	};
+
+	void setDebuggerForCallback(AnotherDebugger & ad);
 }

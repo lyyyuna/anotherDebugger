@@ -11,6 +11,8 @@ using namespace std;
 
 namespace anotherdebugger
 {
+	AnotherDebugger *g_ad;
+
 	void AnotherDebugger::resetBreakPointHandler()
 	{
 		bpUserList.clear();
@@ -29,6 +31,7 @@ namespace anotherdebugger
 		FLAG.resetUserBreakPointAddress = 0;
 		FLAG.glf.lineNumber = 0;
 		FLAG.glf.filePath = string();
+
 	}
 
 	void AnotherDebugger::onSetBreakPoint(const Command & cmds)

@@ -2,11 +2,12 @@
 #include "anotherdebugger.h"
 
 using namespace std;
+using namespace anotherdebugger;
 
 int main()
 {
-	auto lyydebugger = anotherdebugger::AnotherDebugger(true);
-
+	auto lyydebugger = AnotherDebugger(true);
+	setDebuggerForCallback(lyydebugger);
 	lyydebugger.startDebuggerLoop();
 
 	return 0;
