@@ -40,22 +40,22 @@ namespace anotherdebugger
 		SymTagCompiland,
 		SymTagCompilandDetails,
 		SymTagCompilandEnv,
-		SymTagFunction,				//函数
+		SymTagFunction,				// 函数
 		SymTagBlock,
-		SymTagData,					//变量
+		SymTagData,					// 变量
 		SymTagAnnotation,
 		SymTagLabel,
 		SymTagPublicSymbol,
-		SymTagUDT,					//用户定义类型，例如struct，class和union
-		SymTagEnum,					//枚举类型
-		SymTagFunctionType,			//函数类型
-		SymTagPointerType,			//指针类型
-		SymTagArrayType,				//数组类型
-		SymTagBaseType,				//基本类型
-		SymTagTypedef,				//typedef类型
-		SymTagBaseClass,				//基类
-		SymTagFriend,				//友元类型
-		SymTagFunctionArgType,		//函数参数类型
+		SymTagUDT,					// 用户定义类型，例如struct，class和union
+		SymTagEnum,					// 枚举类型
+		SymTagFunctionType,			// 函数类型
+		SymTagPointerType,			// 指针类型
+		SymTagArrayType,			// 数组类型
+		SymTagBaseType,				// 基本类型
+		SymTagTypedef,				// typedef类型
+		SymTagBaseClass,			// 基类
+		SymTagFriend,				// 友元类型
+		SymTagFunctionArgType,		// 函数参数类型
 		SymTagFuncDebugStart,
 		SymTagFuncDebugEnd,
 		SymTagUsingNamespace,
@@ -68,8 +68,7 @@ namespace anotherdebugger
 		SymTagDimension
 	};
 	
-	//表示C/C++基本类型的枚举
-	enum CBaseTypeEnum {
+	enum class CBaseTypeEnum {
 		cbtNone,
 		cbtVoid,
 		cbtBool,
@@ -96,5 +95,26 @@ namespace anotherdebugger
 		DWORD size;
 		DWORD typeID;
 		string name;
+	};
+
+	map<CBaseTypeEnum, string> baseTypeNameMap =
+	{
+		{ cbtNone, "<no-type>" },
+		{ cbtVoid, "void" },
+		{ cbtBool, "bool" },
+		{ cbtChar, "char" },
+		{ cbtUChar, "unsigned char" },
+		{ cbtWChar, "wchar_t" },
+		{ cbtShort, "short" },
+		{ cbtUShort, "unsigned short" },
+		{ cbtInt, "int" },
+		{ cbtUInt, "unsigned int" },
+		{ cbtLong, "long" },
+		{ cbtULong, "unsigned long" },
+		{ cbtLongLong, "long long" },
+		{ cbtULongLong, "unsigned long long" },
+		{ cbtFloat, "float" },
+		{ cbtDouble, "double" },
+
 	};
 }

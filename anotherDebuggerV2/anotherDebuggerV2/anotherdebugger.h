@@ -157,7 +157,20 @@ namespace anotherdebugger
 		// BOOL CALLBACK EnumVariablesCallBack(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
 		void showVariableSummary(const VariableInfo & pVarInfo);
 		void showVariableValue(const VariableInfo & pVarInfo);
+		void printVarHex(DWORD);
 
+		// type
+		bool isPODType(int, DWORD);
+		string getTypeName(int typeID, DWORD modBase);
+		string getTypeValue(int typeID, DWORD modBase, DWORD addr, const BYTE *);
+		string getBaseTypeName(int, DWORD);
+		string getPointerTypeName(int, DWORD);
+		string getArrayTypeName(int, DWORD);
+		string getUDTTypeName(int, DWORD);
+		string getEnumTypeName(int, DWORD);
+		string getNameableTypeName(int, DWORD);
+		string getFunctionTypeName(int, DWORD);
+		CBaseTypeEnum getCBaseType(int, DWORD);
 
 		// inline breakpoint helper
 		BOOL writeDebuggeeMemory(unsigned int address, unsigned int length, const void* pData) 

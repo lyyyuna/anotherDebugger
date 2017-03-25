@@ -239,9 +239,9 @@ namespace anotherdebugger
 		}
 		else {
 
-			std::wcout << std::setw(10) << TEXT(" ");
+			std::wcout << std::setw(10) << " ";
 		}
-		cout << "  ";
+		cout << "\t";
 		cout << line << endl;
 	}
 

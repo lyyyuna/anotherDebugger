@@ -121,12 +121,30 @@ namespace anotherdebugger
 			showVariableSummary(*iter);
 			if (true)
 			{
-				cout << " ";
+				cout << "\t";
 				showVariableValue(*iter);
 			}
 
 			cout << endl;
 		}
 	}
+
+	void AnotherDebugger::showVariableSummary(const VariableInfo & varInfo)
+	{
+		cout << varInfo.name << "\t" <<
+			getTypeName(varInfo.typeID, varInfo.modBase);
+	}
+
+	void AnotherDebugger::showVariableValue(const VariableInfo & varInfo)
+	{
+		BYTE * pData = (BYTE *)malloc(sizeof(BYTE) * varInfo.size);
+		readDebuggeeMemory(varInfo.address, varInfo.size, pData);
+
+		cout << getTypeValue(varInfo.typeID, varInfo.modBase, varInfo.address, pData);
+
+		free(pData);
+	}
+
+
 
 }
