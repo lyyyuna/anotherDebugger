@@ -6,7 +6,7 @@ using namespace anotherdebugger;
 
 int main()
 {
-	auto lyydebugger = AnotherDebugger(true);
+	auto lyydebugger = AnotherDebugger(false);
 	g_ad = &lyydebugger;
 	lyydebugger.startDebuggerLoop();
 

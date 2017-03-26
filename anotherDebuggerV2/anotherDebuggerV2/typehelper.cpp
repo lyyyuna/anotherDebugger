@@ -628,7 +628,7 @@ namespace anotherdebugger
 			pFindParams);
 
 		ostringstream valueStr;
-
+		valueStr << endl;
 		for (int index = 0; index != memberCount; ++index) 
 		{
 			auto isDataMember = getDataMemberInfo(
@@ -640,7 +640,7 @@ namespace anotherdebugger
 
 			if (isDataMember == true) 
 			{
-				valueStr << std::endl;
+				valueStr << endl;
 			}
 		}
 

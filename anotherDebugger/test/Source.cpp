@@ -5,6 +5,17 @@ using namespace::std;
 
 int g_a;
 
+struct S_A
+{
+	int a;
+	double b;
+};
+
+enum E_A
+{
+	yui,
+	bui
+};
 int func()
 {
 	int a;
@@ -17,6 +28,11 @@ int func()
 
 int main()
 {
+	S_A  sa;
+	sa.a = 1;
+	sa.b = 1.01;
+	E_A ea = yui;
+
 	for (int i = 0; i < 2; i++)
 	{
 		int a;
