@@ -32,6 +32,7 @@ namespace anotherdebugger
 		cmdmap.insert(make_pair("out", &AnotherDebugger::onStepOut));
 		cmdmap.insert(make_pair("llv", &AnotherDebugger::onShowLocalVariables));
 		cmdmap.insert(make_pair("lgv", &AnotherDebugger::onShowGlobalVariables));
+		cmdmap.insert(make_pair("st", &AnotherDebugger::onShowStackTrace));
 	}
 
 	void AnotherDebugger::startDebuggerLoop()

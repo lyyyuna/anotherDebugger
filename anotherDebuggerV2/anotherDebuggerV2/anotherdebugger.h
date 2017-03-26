@@ -56,6 +56,9 @@ namespace anotherdebugger
 		DWORD debuggeeprocessID;
 		DWORD debuggeethreadID;
 
+		// addr to module
+		map<DWORD, string> moduleMap;;
+
 		// breakpoint
 		bool isInitBpSet;
 		BreakPoint bpStepOver;
@@ -121,6 +124,7 @@ namespace anotherdebugger
 		void onStepOut(const Command & cmds);
 		void onShowLocalVariables(const Command &);
 		void onShowGlobalVariables(const Command &);
+		void onShowStackTrace(const Command &);
 
 		// helper function
 		void displayOneLine(LPCTSTR srcfile, string & line, int linenum, bool isCurline);

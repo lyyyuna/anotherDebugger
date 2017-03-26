@@ -32,6 +32,7 @@ namespace anotherdebugger
 		FLAG.glf.lineNumber = 0;
 		FLAG.glf.filePath = string();
 
+		moduleMap.clear();
 	}
 
 	void AnotherDebugger::onSetBreakPoint(const Command & cmds)
