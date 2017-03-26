@@ -3,6 +3,8 @@
 
 using namespace::std;
 
+int g_a;
+
 int func()
 {
 	int a;
@@ -18,6 +20,7 @@ int main()
 	for (int i = 0; i < 2; i++)
 	{
 		int a;
+		g_a++;
 		a = 1 + 2;
 		func();
 		cout << "hello world." << endl;

@@ -71,6 +71,7 @@
     <ClCompile Include="dumphandler.cpp" />
     <ClCompile Include="gohandler.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="showglobalvariablehandler.cpp" />
     <ClCompile Include="showlocalvariableshandler.cpp" />
     <ClCompile Include="showregisterhandler.cpp" />
     <ClCompile Include="showsourcelineshandler.cpp" />
@@ -79,6 +80,7 @@
     <ClCompile Include="stepouthandler.cpp" />
     <ClCompile Include="stepoverhandler.cpp" />
     <ClCompile Include="stophandler.cpp" />
+    <ClCompile Include="typehelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anotherdebugger.h" />

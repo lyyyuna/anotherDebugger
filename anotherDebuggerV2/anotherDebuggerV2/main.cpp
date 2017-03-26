@@ -7,7 +7,7 @@ using namespace anotherdebugger;
 int main()
 {
 	auto lyydebugger = AnotherDebugger(true);
-	setDebuggerForCallback(lyydebugger);
+	g_ad = &lyydebugger;
 	lyydebugger.startDebuggerLoop();
 
 	return 0;

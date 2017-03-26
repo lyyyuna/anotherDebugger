@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ANOTHER_DEBUGGER_H
+#define ANOTHER_DEBUGGER_H
 
 #include <string>
 #include <vector>
@@ -153,6 +154,7 @@ namespace anotherdebugger
 
 		// list local variables helper
 		void showVariables(list<VariableInfo> &);
+		void showVariable(list<VariableInfo> &);
 		// DWORD getSymbolAddr(PSYMBOL_INFO pSymbolInfo);
 		// BOOL CALLBACK EnumVariablesCallBack(PSYMBOL_INFO pSymInfo, ULONG SymbolSize, PVOID UserContext);
 		void showVariableSummary(const VariableInfo & pVarInfo);
@@ -160,9 +162,10 @@ namespace anotherdebugger
 		void printVarHex(DWORD);
 
 		// type
+		// get type name
 		bool isPODType(int, DWORD);
 		string getTypeName(int typeID, DWORD modBase);
-		string getTypeValue(int typeID, DWORD modBase, DWORD addr, const BYTE *);
+		// string getTypeValue(int typeID, DWORD modBase, DWORD addr, const BYTE *);
 		string getBaseTypeName(int, DWORD);
 		string getPointerTypeName(int, DWORD);
 		string getArrayTypeName(int, DWORD);
@@ -171,6 +174,18 @@ namespace anotherdebugger
 		string getNameableTypeName(int, DWORD);
 		string getFunctionTypeName(int, DWORD);
 		CBaseTypeEnum getCBaseType(int, DWORD);
+
+		// get type value
+		string getTypeValue(int typeID, DWORD modBase, DWORD address, const BYTE* pData);
+		string getBaseTypeValue(int typeID, DWORD modBase, const BYTE* pData);
+		string getPointerTypeValue(int typeID, DWORD modBase, const BYTE* pData);
+		string getEnumTypeValue(int typeID, DWORD modBase, const BYTE* pData);
+		string getArrayTypeValue(int typeID, DWORD modBase, DWORD address, const BYTE* pData);
+		string getUDTTypeValue(int typeID, DWORD modBase, DWORD address, const BYTE* pData);
+		string getCBaseTypeValue(CBaseTypeEnum cBaseType, const BYTE* pData);
+		bool variantEqual(VARIANT var, CBaseTypeEnum cBaseType, const BYTE* pData);
+		bool getDataMemberInfo(DWORD memberID, DWORD modBase, DWORD address, const BYTE* pData, ostringstream&);
+
 
 		// inline breakpoint helper
 		BOOL writeDebuggeeMemory(unsigned int address, unsigned int length, const void* pData) 
@@ -222,5 +237,8 @@ namespace anotherdebugger
 
 	};
 
-	void setDebuggerForCallback(AnotherDebugger & ad);
+	//void setDebuggerForCallback(AnotherDebugger ** ad);
+	extern AnotherDebugger * g_ad;
 }
+
+#endif

@@ -57,6 +57,12 @@
     <ClCompile Include="showlocalvariableshandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="typehelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="showglobalvariablehandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anotherdebugger.h">

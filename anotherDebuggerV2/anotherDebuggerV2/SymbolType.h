@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SYMBOL_TYPE_H
+#define SYMBOL_TYPE_H
 
 #include <string>
 #include <vector>
@@ -97,24 +98,7 @@ namespace anotherdebugger
 		string name;
 	};
 
-	map<CBaseTypeEnum, string> baseTypeNameMap =
-	{
-		{ cbtNone, "<no-type>" },
-		{ cbtVoid, "void" },
-		{ cbtBool, "bool" },
-		{ cbtChar, "char" },
-		{ cbtUChar, "unsigned char" },
-		{ cbtWChar, "wchar_t" },
-		{ cbtShort, "short" },
-		{ cbtUShort, "unsigned short" },
-		{ cbtInt, "int" },
-		{ cbtUInt, "unsigned int" },
-		{ cbtLong, "long" },
-		{ cbtULong, "unsigned long" },
-		{ cbtLongLong, "long long" },
-		{ cbtULongLong, "unsigned long long" },
-		{ cbtFloat, "float" },
-		{ cbtDouble, "double" },
 
-	};
 }
+
+#endif

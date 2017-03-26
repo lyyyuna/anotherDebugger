@@ -12,7 +12,7 @@ using namespace std;
 
 namespace anotherdebugger
 {
-	AnotherDebugger *g_ad;
+	extern AnotherDebugger *g_ad;
 	DWORD getSymbolAddr(PSYMBOL_INFO pSymbolInfo)
 	{
 		if ((pSymbolInfo->Flags & SYMFLAG_REGREL) == 0)
@@ -73,7 +73,7 @@ namespace anotherdebugger
 			return;
 		}
 
-		if (cmds.size() != 1)
+		if (cmds.size() > 2)
 		{
 			cout << "Invalid params" << endl;
 			return;
@@ -96,20 +96,55 @@ namespace anotherdebugger
 			}
 		}
 
-		list<VariableInfo> varInfos;
-
-		if (SymEnumSymbols(
-			debuggeehProcess,
-			0,
-			NULL,
-			EnumVariablesCallBack,
-			&varInfos
-			) == FALSE)
+		if (cmds.size() == 1)
 		{
-			cout << "SymEnumSymbols failed: " << GetLastError() << endl;
-		}
+			list<VariableInfo> varInfos;
 
-		showVariables(varInfos);
+			if (SymEnumSymbols(
+				debuggeehProcess,
+				0,
+				NULL,
+				EnumVariablesCallBack,
+				&varInfos
+				) == FALSE)
+			{
+				cout << "SymEnumSymbols failed: " << GetLastError() << endl;
+			}
+
+			showVariables(varInfos);
+		}
+		else
+		{
+			list<VariableInfo> varInfos;
+			LPCSTR expression = NULL;
+			expression = cmds[1].c_str();
+
+			if (SymEnumSymbols(
+				debuggeehProcess,
+				0,
+				expression,
+				EnumVariablesCallBack,
+				&varInfos
+				) == FALSE)
+			{
+				cout << "SymEnumSymbols failed: " << GetLastError() << endl;
+			}
+
+			showVariable(varInfos);
+		}
+	}
+
+	void AnotherDebugger::showVariable(list<VariableInfo> & varInfos)
+	{
+		if (varInfos.begin() == varInfos.end())
+		{
+			cout << "This variable is not existed." << endl;
+			return;
+		}
+		showVariableSummary(*varInfos.begin());
+		cout << "\t";
+		showVariableValue(*varInfos.begin());
+		cout << endl;
 	}
 
 	void AnotherDebugger::showVariables(list<VariableInfo> & varInfos)
@@ -119,7 +154,7 @@ namespace anotherdebugger
 			iter++)
 		{
 			showVariableSummary(*iter);
-			if (true)
+			if (true == isPODType(iter->typeID, iter->modBase))
 			{
 				cout << "\t";
 				showVariableValue(*iter);

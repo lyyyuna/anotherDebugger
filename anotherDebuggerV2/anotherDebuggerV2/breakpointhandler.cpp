@@ -11,7 +11,7 @@ using namespace std;
 
 namespace anotherdebugger
 {
-	AnotherDebugger *g_ad;
+	//AnotherDebugger *g_ad;
 
 	void AnotherDebugger::resetBreakPointHandler()
 	{
